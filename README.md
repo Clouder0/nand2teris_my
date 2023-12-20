@@ -1,8 +1,8 @@
-# Clouder's project implementation of nand2teris
+# Clouder's project implementation of nand2tetris
 
-This is my implementation of nand2teris projects.
+This is my implementation of nand2tetris projects.
 
-I start directly from Nand2Teris2.
+I start directly from Nand2Tetris2.
 
 Here is a list of projects that I've been working on:
 
@@ -10,9 +10,9 @@ Here is a list of projects that I've been working on:
 
 You can find detailed documentation on my [blog](https://www.codein.icu) or social media after I've published them.
 
-# Clouder 的 Nand2Teris Project 实现
+# Clouder 的 Nand2Tetris Project 实现
 
-我直接从 Nand2Teris2 开始上。
+我直接从 Nand2Tetris2 开始上。
 
 下面是我完成的 Project 列表：
 
