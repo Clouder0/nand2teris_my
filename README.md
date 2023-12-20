@@ -6,7 +6,7 @@ I start directly from Nand2Teris2.
 
 Here is a list of projects that I've been working on:
 
-- [ ] project4
+- [x] project4
 
 You can find detailed documentation on my [blog](https://www.codein.icu) or social media after I've published them.
 
@@ -16,6 +16,6 @@ You can find detailed documentation on my [blog](https://www.codein.icu) or soci
 
 下面是我完成的 Project 列表：
 
-- [ ] project4
+- [x] project4
 
 在我发布之后，你可以在我的[博客](https://www.codein.icu)或社交媒体上查看到相关的说明。
