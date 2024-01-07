@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "vm-translator"
+version = "0.0.1"
+description = "Clouder's Nand2Tetris VM translator"
+authors = ["Clouder0 <clouder0@outlook.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.8.0"
+black = "^23.12.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
