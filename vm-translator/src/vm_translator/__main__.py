@@ -1,2 +1,4 @@
+from vm_translator import cli
+
 if __name__ == "__main__":
-    print("Hello, world!")
+    cli.main()
