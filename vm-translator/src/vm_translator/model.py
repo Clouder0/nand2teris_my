@@ -1,14 +1,19 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from collections import defaultdict
+from dataclasses import dataclass, field
 import pathlib
 from typing import ClassVar, Type
 
 
 @dataclass
 class Context:
-    filename: pathlib.Path | None = None
+    filename: str | None = None
+    function_name: str = ""
     label_counter: int = 0
+    function_ret_counter: dict[str, int] = field(
+        default_factory=lambda: defaultdict(int)
+    )
 
 
 class ICommand:
@@ -90,6 +95,72 @@ class C_NOT(ICommand):
     name = "not"
 
 
+class C_LABEL(ICommand):
+    name = "label"
+
+    def __init__(self, ctx, label: str):
+        super().__init__(ctx)
+        self.label = label
+
+    @classmethod
+    def parse(cls, ctx, args):
+        return cls(ctx, label=args[0])
+
+
+class C_GOTO(ICommand):
+    name = "goto"
+
+    def __init__(self, ctx, label: str):
+        super().__init__(ctx)
+        self.label = label
+
+    @classmethod
+    def parse(cls, ctx, args):
+        return cls(ctx, label=args[0])
+
+
+class C_IF_GOTO(ICommand):
+    name = "if-goto"
+
+    def __init__(self, ctx, label: str):
+        super().__init__(ctx)
+        self.label = label
+
+    @classmethod
+    def parse(cls, ctx, args):
+        return cls(ctx, label=args[0])
+
+
+class C_FUNCTION(ICommand):
+    name = "function"
+
+    def __init__(self, ctx, function_name: str, num_locals: int):
+        super().__init__(ctx)
+        self.function_name = function_name
+        self.num_locals = num_locals
+
+    @classmethod
+    def parse(cls, ctx, args):
+        return cls(ctx, function_name=args[0], num_locals=int(args[1]))
+
+
+class C_CALL(ICommand):
+    name = "call"
+
+    def __init__(self, ctx, function_name: str, num_args: int):
+        super().__init__(ctx)
+        self.function_name = function_name
+        self.num_args = num_args
+
+    @classmethod
+    def parse(cls, ctx, args):
+        return cls(ctx, function_name=args[0], num_args=int(args[1]))
+
+
+class C_RETURN(ICommand):
+    name = "return"
+
+
 cmd_list: list[Type[ICommand]] = [
     C_PUSH,
     C_POP,
@@ -102,4 +173,10 @@ cmd_list: list[Type[ICommand]] = [
     C_AND,
     C_OR,
     C_NOT,
+    C_LABEL,
+    C_GOTO,
+    C_IF_GOTO,
+    C_FUNCTION,
+    C_CALL,
+    C_RETURN,
 ]

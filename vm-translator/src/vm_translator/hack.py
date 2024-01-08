@@ -82,7 +82,15 @@ class Translator:
         self.helper = Helper(ctx)
 
     def translate(self, cmd: model.ICommand) -> str:
-        return getattr(self, f"translate_{cmd.getName()}")(cmd)
+        return getattr(self, f"translate_{cmd.getName().replace('-','_')}")(cmd)
+
+    def bootstrap(self) -> str:
+        return f"""@256
+D=A
+@SP
+M=D
+{self.translate_call(model.C_CALL(self.ctx, "sys.init", 0))}
+"""
 
     def translate_push(self, cmd: model.C_PUSH) -> str:
         if cmd.segment == "constant":
@@ -118,3 +126,92 @@ class Translator:
 
     def translate_not(self, cmd: model.C_NOT) -> str:
         return f"{self.helper.stpop()}\nD=!D;\n{self.helper.stpush()}\n"
+
+    def translate_label(self, cmd: model.C_LABEL) -> str:
+        return f"({self.ctx.function_name}${cmd.label})\n"
+
+    def translate_goto(self, cmd: model.C_GOTO) -> str:
+        return f"@{self.ctx.function_name}${cmd.label}\n0;JMP\n"
+
+    def translate_if_goto(self, cmd: model.C_IF_GOTO) -> str:
+        return f"{self.helper.stpop()}\n@{self.ctx.function_name}${cmd.label}\nD;JNE\n"
+
+    def translate_function(self, cmd: model.C_FUNCTION) -> str:
+        output = f"({cmd.function_name})\nD=0\n"
+        for _ in range(cmd.num_locals):
+            output += f"{self.helper.stpush()}\n"
+        return output
+
+    def translate_call(self, cmd: model.C_CALL) -> str:
+        ret_id = self.ctx.function_ret_counter[cmd.function_name]
+        self.ctx.function_ret_counter[cmd.function_name] = ret_id + 1
+        return f"""@{cmd.function_name}$ret.{ret_id}
+D=A
+{self.helper.stpush()}
+@LCL
+D=M
+{self.helper.stpush()}
+@ARG
+D=M
+{self.helper.stpush()}
+@THIS
+D=M
+{self.helper.stpush()}
+@THAT
+D=M
+{self.helper.stpush()}
+{self.helper.constval(5 + cmd.num_args)}
+@SP
+D=M-D
+@ARG
+M=D
+@SP
+D=M
+@LCL
+M=D
+@{cmd.function_name}
+0; JMP
+({cmd.function_name}$ret.{ret_id})
+"""
+
+    def translate_return(self, cmd: model.C_RETURN) -> str:
+        return f"""
+{self.helper.stpop()}
+@R15
+M=D
+@ARG
+D=M
+@R13
+M=D
+@LCL
+D=M
+@SP
+M=D
+{self.helper.stpop()}
+@THAT
+M=D
+{self.helper.stpop()}
+@THIS
+M=D
+{self.helper.stpop()}
+@ARG
+M=D
+{self.helper.stpop()}
+@LCL
+M=D
+{self.helper.stpop()}
+@R14
+M=D
+@R13
+D=M
+@SP
+M=D+1
+@R15
+D=M
+@R13
+A=M
+M=D
+@R14
+A=M
+0; JMP
+"""
