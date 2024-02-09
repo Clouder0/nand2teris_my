@@ -5,7 +5,7 @@ use std::{
     mem,
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum KeywordType {
     CLASS,
     METHOD,
@@ -30,7 +30,7 @@ pub enum KeywordType {
     THIS,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Keyword(KeywordType),
     Symbol(char),
@@ -127,8 +127,11 @@ where
 
     pub fn advance(&mut self) -> Option<Token> {
         // read until there exists some tokens
-        while self.token_buffer.len() == 0 && self.read_line() != Option::None {
-            self.read_line();
+        while self.token_buffer.len() == 0 {
+            let parsed = self.read_line();
+            if parsed == Option::None {
+                return Option::None;
+            }
         }
         self.token_buffer.pop_front()
     }
