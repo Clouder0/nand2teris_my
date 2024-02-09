@@ -10,21 +10,12 @@ trait Parsable {
         Self: Sized;
 }
 
-trait Element: Parsable {}
-
-trait Structure: Parsable {}
-
-trait Statement: Parsable {}
-
-trait Expression: Parsable {}
-
 pub mod elements {
 
-    use super::{Element, Parsable, TokenReader};
+    use super::{Parsable, TokenReader};
     use crate::tokenizer::{KeywordType, Token};
 
     pub struct Keyword(pub KeywordType);
-    impl Element for Keyword {}
     impl Parsable for Keyword {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match reader.tokens[idx] {
@@ -35,7 +26,6 @@ pub mod elements {
     }
 
     pub struct Symbol(pub char);
-    impl Element for Symbol {}
     impl Parsable for Symbol {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match reader.tokens[idx] {
@@ -46,7 +36,6 @@ pub mod elements {
     }
 
     pub struct IntegerConstant(pub i64);
-    impl Element for IntegerConstant {}
     impl Parsable for IntegerConstant {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match reader.tokens[idx] {
@@ -57,7 +46,6 @@ pub mod elements {
     }
 
     pub struct StringConstant(String);
-    impl Element for StringConstant {}
     impl Parsable for StringConstant {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match &reader.tokens[idx] {
@@ -68,7 +56,6 @@ pub mod elements {
     }
 
     pub struct Identifier(String);
-    impl Element for Identifier {}
     impl Parsable for Identifier {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match &reader.tokens[idx] {
@@ -93,7 +80,7 @@ mod structures {
 
     use super::{
         elements::{self, try_parse_symbol},
-        statements, Parsable, Structure, TokenReader,
+        statements, Parsable, TokenReader,
     };
 
     pub struct Class {
@@ -173,7 +160,6 @@ mod structures {
         CLASSNAME(ClassName),
     }
     pub struct VarType(pub VarTypeEnum);
-    impl Structure for VarType {}
     impl Parsable for VarType {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match &reader.tokens[idx] {
@@ -194,7 +180,6 @@ mod structures {
     }
 
     pub struct ClassName(pub String);
-    impl Structure for ClassName {}
     impl Parsable for ClassName {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match &reader.tokens[idx] {
@@ -205,7 +190,6 @@ mod structures {
     }
 
     pub struct SubroutineName(pub String);
-    impl Structure for SubroutineName {}
     impl Parsable for SubroutineName {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match &reader.tokens[idx] {
@@ -218,7 +202,6 @@ mod structures {
     }
 
     pub struct VarName(pub String);
-    impl Structure for VarName {}
     impl Parsable for VarName {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             match &reader.tokens[idx] {
@@ -232,7 +215,6 @@ mod structures {
         pub var_type: VarType,
         pub var_names: Vec<VarName>,
     }
-    impl Structure for VarDec {}
     impl Parsable for VarDec {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             let mut p = idx;
@@ -272,7 +254,6 @@ mod structures {
         pub var_type: VarType,
         pub var_names: Vec<VarName>,
     }
-    impl Structure for ClassVarDec {}
     impl Parsable for ClassVarDec {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             let mut p = idx;
@@ -309,7 +290,6 @@ mod structures {
     pub struct ParameterList {
         pub parameters: Vec<(VarType, VarName)>,
     }
-    impl Structure for ParameterList {}
     impl Parsable for ParameterList {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             let mut p = idx;
@@ -353,7 +333,6 @@ mod structures {
         pub var_decs: Vec<VarDec>,
         pub statements: statements::Statements,
     }
-    impl Structure for SubroutineBody {}
     impl Parsable for SubroutineBody {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             let mut var_decs = vec![];
@@ -425,7 +404,6 @@ mod structures {
         pub parameter_list: ParameterList,
         pub subroutine_body: SubroutineBody,
     }
-    impl Structure for SubroutineDec {}
     impl Parsable for SubroutineDec {
         fn try_parse(reader: &TokenReader, idx: usize) -> Option<(Self, usize)> {
             let mut p = idx;
@@ -619,7 +597,7 @@ pub mod statements {
                     true_statements: _true_statements.0,
                     false_statements: Some(_false_statements.0),
                 },
-                _false_statements.1,
+                p
             ))
         }
     }
