@@ -9,6 +9,7 @@ Here is a list of projects that I've been working on:
 - [x] project4
 - [x] project7
 - [x] project8
+- [x] project10
 
 You can find detailed documentation on my [blog](https://www.codein.icu) or social media after I've published them.
 
@@ -21,5 +22,6 @@ You can find detailed documentation on my [blog](https://www.codein.icu) or soci
 - [x] project4
 - [x] project7
 - [x] project8
+- [x] project10
 
 在我发布之后，你可以在我的[博客](https://www.codein.icu)或社交媒体上查看到相关的说明。
