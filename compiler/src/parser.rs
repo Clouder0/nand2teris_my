@@ -1644,7 +1644,7 @@ pub mod tests {
             Token::Symbol('}'),
         ];
         let reader = TokenReader { tokens: tokens };
-        let (if_statement, new_idx) = statements::IfStatement::_try_parse(&reader, 0).unwrap();
+        let (if_statement, _new_idx) = statements::IfStatement::_try_parse(&reader, 0).unwrap();
         assert_eq!(
             if_statement.condition,
             expressions::Expression {
