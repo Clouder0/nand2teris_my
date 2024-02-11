@@ -109,6 +109,27 @@ fn parse_keyword(k_str: &str) -> Option<KeywordType> {
     }
 }
 
+fn is_symbol(c: char) -> bool {
+    c == '{'
+        || c == '}'
+        || c == '('
+        || c == ')'
+        || c == '['
+        || c == ']'
+        || c == '.'
+        || c == ','
+        || c == ';'
+        || c == '+'
+        || c == '-'
+        || c == '*'
+        || c == '&'
+        || c == '|'
+        || c == '<'
+        || c == '>'
+        || c == '='
+        || c == '~'
+}
+
 impl<T> Tokenizer<T>
 where
     T: std::io::Read,
@@ -196,7 +217,7 @@ where
                         }
                     }
                     TokenType::Others => {
-                        if c == ' ' || c == '\n' {
+                        if c == ' ' || c == '\n' || is_symbol(c){
                             // end of token
                             token_parsed += 1;
                             self.token_buffer.push_back(
@@ -218,6 +239,10 @@ where
                             );
                             self.now_token = String::new();
                             self.token_type = TokenType::None;
+                            if c != ' ' && c != '\n' {
+                                // special handling for symbols
+                                self.token_buffer.push_back(Token::Symbol(c));
+                            }
                         } else {
                             // normal character
                             self.now_token.push(c);
@@ -227,7 +252,7 @@ where
                         if c == '"' {
                             // string start
                             self.token_type = TokenType::String;
-                        } else if c == ' ' || c == '\n' {
+                        } else if c == ' ' || c == '\n' || c == '\t' {
                             // ignore
                         } else if c == '/' && last_char == Some('/') {
                             // inline comment start
@@ -235,30 +260,13 @@ where
                         } else if c == '*' && last_char == Some('/') {
                             // block comment start
                             self.comment_state = CommentState::Block;
-                        } else if c == '{'
-                            || c == '}'
-                            || c == '('
-                            || c == ')'
-                            || c == '['
-                            || c == ']'
-                            || c == '.'
-                            || c == ','
-                            || c == ';'
-                            || c == '+'
-                            || c == '-'
-                            || c == '*'
+                        } else if is_symbol(c)
                             || (c == '/'
                                 && buf
                                     .chars()
                                     .nth(idx + 1)
                                     .and_then(|x| if x == '/' || x == '*' { Some(x) } else { None })
                                     .is_none())
-                            || c == '&'
-                            || c == '|'
-                            || c == '<'
-                            || c == '>'
-                            || c == '='
-                            || c == '~'
                         {
                             token_parsed += 1;
                             self.token_buffer.push_back(Token::Symbol(c));
